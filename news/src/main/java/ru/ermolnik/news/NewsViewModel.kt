@@ -18,18 +18,29 @@ class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
     init {
         Log.d("rualty", "vm: start")
         viewModelScope.launch {
-            repository.getNews()
-                .collect {
-                    Log.d("rualty", "vm: $it")
-                    it.doOnError { error ->
-                        Log.d("rualty", "vm: onError: $error")
-                        _state.emit(NewsState.Error(error))
-                    }
-                    it.doOnSuccess { news ->
-                        Log.d("rualty", "vm: onSuccess = $news")
-                        _state.emit(NewsState.Content(news.id))
-                    }
+            fetchNews()
+        }
+    }
+
+    suspend fun fetchNews(isForcedUpdate: Boolean = false) {
+        repository.getNews(isForcedUpdate)
+            .collect {
+                Log.d("rualty", "vm: $it")
+                it.doOnError { error ->
+                    Log.d("rualty", "vm: onError: $error")
+                    _state.emit(NewsState.Error(error))
                 }
+                it.doOnSuccess { news ->
+                    Log.d("rualty", "vm: onSuccess = $news")
+                    _state.emit(NewsState.Content(news))
+                }
+            }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _state.emit(NewsState.Loading)
+            fetchNews(isForcedUpdate = true)
         }
     }
 }

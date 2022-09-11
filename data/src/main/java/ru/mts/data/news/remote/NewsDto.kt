@@ -8,12 +8,21 @@ import ru.mts.data.news.repository.News
 
 class NewsDto {
     @Parcelize
-    data class Request(@SerializedName("id") val id: Int) : Parcelable
+    data class Request(@SerializedName("isForcedUpdate") val isForcedUpdate: Boolean) : Parcelable
 
     @Parcelize
-    data class Response(@SerializedName("id") val id: Int) : Parcelable
+    data class Response(
+        @SerializedName("newsList") val newsList: List<News>
+    ) : Parcelable
+
+    @Parcelize
+    data class News(
+        @SerializedName("id") val id: Int,
+        @SerializedName("name") val name: String,
+        @SerializedName("description") val description: String
+    ) : Parcelable
 }
 
-internal fun NewsDto.Response.toDomain(): News {
-    return News(this.id)
+internal fun NewsDto.News.toDomain(): News {
+    return News(this.id, this.name, this.description)
 }
