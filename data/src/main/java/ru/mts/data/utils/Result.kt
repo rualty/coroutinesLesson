@@ -1,5 +1,6 @@
 package ru.mts.data.utils
 
+import android.util.Log
 import timber.log.Timber
 import java.util.concurrent.CancellationException
 
@@ -55,12 +56,14 @@ inline fun <S, E> Result<S, E>.doOnError(block: (E) -> Unit): Result<S, E> {
 
 inline fun <S, R> S.runOperationCatching(block: S.() -> R): Result<R, Throwable> {
     return try {
-        Result.Success(block())
+        Result.Success(block()).also {
+            Log.d("rualty", "runOperationCatching: $it")
+        }
     } catch (e: CancellationException) {
-        Timber.e("runOperationCatching: ".plus(e.toString()))
+        Log.d("rualty", "runOperationCatching: ".plus(e.toString()))
         throw e
     } catch (e: Throwable) {
-        Timber.e("runOperationCatching: ".plus(e.toString()))
+        Log.d("rualty", "runOperationCatching: ".plus(e.toString()))
         Result.Error(e)
     }
 }

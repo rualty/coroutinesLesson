@@ -1,5 +1,6 @@
 package ru.ermolnik.news
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun NewsScreen(viewModel: NewsViewModel) {
     val state = viewModel.state.collectAsState()
+    Log.d("rualty", "screen: $state")
     Box(modifier = Modifier.fillMaxSize()) {
         when (state.value) {
             is NewsState.Loading -> {
@@ -26,6 +28,7 @@ fun NewsScreen(viewModel: NewsViewModel) {
                 )
             }
             is NewsState.Error -> {
+                Text(text = "Опс что то пошло не такб проверьте настройки интернета и попробуйте снова")
                 Text(
                     text = (state.value as NewsState.Error).throwable.toString(),
                     modifier = Modifier
